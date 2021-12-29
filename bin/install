@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+set -v
+set -x
+set -e
+set -o pipefail
+
+ASDF_INSTALL_TYPE=${ASDF_INSTALL_TYPE:-version  }
+TMPDIR=${TMPDIR:-/tmp}
+[ -n "$ASDF_INSTALL_VERSION" ] || (>&2 echo 'Missing ASDF_INSTALL_VERSION' && exit 1)
+[ -n "$ASDF_INSTALL_PATH" ] || (>&2 echo 'Missing ASDF_INSTALL_PATH' && exit 1)
+
+install() {
+  local install_type=$1
+  local version=$2
+  local install_path=$3
+
+  local download_version=$(echo ${version} | cut -d'v' -f2)
+  local bin_name="k2tf"
+  local bin_install_path="$install_path/bin"
+  local bin_path="${bin_install_path}/${bin_name}"
+
+  case $(uname | tr '[:upper:]' '[:lower:]') in
+    linux*)
+      local platform=Linux_x86_64
+      ;;
+    darwin*)
+      local platform=Darwin_x86_64
+      ;;
+    *)
+      local platform=notset
+      ;;
+  esac
+
+  local filename="${bin_name}_${download_version}_${platform}"
+  local download_url="$(get_download_url $filename)"
+  local tmp_bin_path="${TMPDIR}/${filename}.tar.gz"
+  local tmp_path="${TMPDIR}/${bin_name}"
+
+  echo "Downloading release from ${download_url}"
+  mkdir -p $bin_install_path
+  curl -sL $download_url -o $tmp_bin_path
+
+  echo "Extracting ${tmp_bin_path}"
+  tar zxf $tmp_bin_path --directory $TMPDIR
+
+  echo "Moving bin to ${bin_path}"
+  cp $tmp_path $bin_path
+
+  echo "Cleaning tmps..."
+  rm -r $tmp_path
+
+  echo "Run: asdf <global | local> k2tf ${version}"
+  chmod +x $bin_path
+}
+
+get_download_url() {
+  local filename="$1"
+  # echo "https://github.com/sl1pm4t/k2tf/releases/download/v0.6.3/k2tf_0.6.3_Linux_x86_64.tar.gz"
+  echo "https://github.com/sl1pm4t/k2tf/releases/download/${version}/${filename}.tar.gz"
+}
+
+install $ASDF_INSTALL_TYPE $ASDF_INSTALL_VERSION $ASDF_INSTALL_PATH
