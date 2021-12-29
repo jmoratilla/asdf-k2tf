@@ -1,6 +1,6 @@
-# asdf-k2tf-plugin
+# asdf-k2tf
 
-![CI](https://github.com/jmoratilla/asdf-k2tf-plugin/workflows/CI/badge.svg?branch=master)
+![CI](https://github.com/jmoratilla/asdf-k2tf/workflows/CI/badge.svg?branch=master)
 
 
 This is a [k2tf](https://github.com/sl1pm4t/k2tf) plugin for [asdf](https://github.com/asdf-vm/asdf) version manager
@@ -8,7 +8,7 @@ This is a [k2tf](https://github.com/sl1pm4t/k2tf) plugin for [asdf](https://gith
 ## Install
 
 ```
-asdf plugin-add k2tf https://github.com/jmoratilla/asdf-k2tf-plugin.git
+asdf plugin-add k2tf https://github.com/jmoratilla/asdf-k2tf.git
 ```
 
 ## Use
